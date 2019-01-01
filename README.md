@@ -3,20 +3,20 @@ The end goal of this project is to create an all-in-one security scanner that an
 
 ## Current state
 
-Uses nmap to scan a target, takes the received information to search the Vulners database, and outputs it to a file in an easy-to-read format.
+Uses nmap to scan a target, takes the received information to search the Vulners database, and outputs it to a file in an easy-to-read format. Unfinished.
 
 ## Goals
 
-> Incorporate a plethora of tools to make a versatile python script that anyone can add on to.
+> Incorporate a plethora of tools to make a versatile python scanning script that anyone can add on to.
 
 ## Installation
 
-Currently, only three modules are required to run Kronos: vulners and python-nmap. 
+Currently, only two modules are required to run Kronos: vulners and python-nmap. 
 Use the command below to install them:
 
 ```pip install vulners python-nmap```
 
-That's all there is to it.
+That's it.
 
 ## Usage
 
