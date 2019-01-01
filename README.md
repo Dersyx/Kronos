@@ -11,10 +11,10 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 ## Installation
 
-Currently, only three modules are required to run Kronos: vulners, python-nmap, and validators. 
+Currently, only three modules are required to run Kronos: vulners and python-nmap. 
 Use the command below to install them:
 
-```pip install vulners python-nmap validators```
+```pip install vulners python-nmap```
 
 That's all there is to it.
 
