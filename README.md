@@ -21,6 +21,7 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 ## Current Tasks
 
 > Make more efficient than it currently is (takes a couple of minutes to run a scan).
+
 > Add more options. Make every option less hard-coded.
 
 ## Installation
