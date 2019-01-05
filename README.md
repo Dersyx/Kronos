@@ -9,20 +9,20 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 ## Overall Goals
 
-> Allow for fluid incorporation of Nmap arguments from the command line (Most likely with something like `--arguments "-A -T4 -p-" `
+> Fluid incorporation of Nmap arguments from the command line (Example: `--arguments "-A -T4 -p-" `
 
-> Allow for easy addition of search criteria from the command line.
+> Easy addition of vulners search terms.
 
-> Make a 99% polished tool for actual real-world use.
+> 99% polished tool for professional use.
 
-> Make it usable on all platforms (I do not personally own an apple product of any kind. If you have a desktop apple product, and would like to help with testing, I would really appreciate it. Message me with more details.
+> Cross-platform compatability (mac users, would love to have your help with testing).
 
 
 ## Current Tasks
 
-> Make more efficient than it currently is (takes a couple of minutes to run a scan).
+> Improve efficiency (currently takes 3-4 minutes/scan).
 
-> Add more options. Make every option less hard-coded.
+> More command-line arguments for flexability.
 
 ## Installation
 
@@ -36,8 +36,8 @@ That's it.
 
 To run Kronos, simply type: `python kronos.py --host x`, where x is the host you want to scan, while in the Kronos directory.
 
-**IF**, when you run the script, you get an AttributeError, that is due to you missing the vulners api key.
-In order to get an api key, register at the [vulners website](https://vulners.com). 
+**IF**, when you run the script, you get an AttributeError, that is due to the script missing the vulners api key.
+In order to get an api key, register an account at [vulners website](https://vulners.com). 
 Once you have registered, go to the menu by clicking on your name in the top right-hand corner. 
 Click on the **API KEYS** tab. Generate an api key with the scope "api".
 From there, copy your api key into the code in place of ADD KEY HERE in the VULNERSAPI variable (Line 12).
