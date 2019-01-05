@@ -1,3 +1,5 @@
+## Description
+
 Kronos is a personal project of mine that I started to learn more about python. It will continue to be the main place where I test my python programming skills. However, I feel that its uniqueness could be used for more than just by myself, and is why I have chose to release it on GitHub.
 The end goal of this project is to create a flexible scanner that will easily search vulnerability databases.
 
@@ -8,9 +10,13 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 ## Overall Goals
 
 > Allow for fluid incorporation of Nmap arguments from the command line (Most likely with something like `--arguments "-A -T4 -p-" `
-> Allow for easy addition of search criteria from the command line
+
+> Allow for easy addition of search criteria from the command line.
+
 > Make a 99% polished tool for actual real-world use.
+
 > Make it usable on all platforms (I do not personally own an apple product of any kind. If you have a desktop apple product, and would like to help with testing, I would really appreciate it. Message me with more details.
+
 
 ## Current Tasks
 
