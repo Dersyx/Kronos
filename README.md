@@ -1,20 +1,27 @@
-Kronos is a personal project of mine that I started to learn more about python, and will continue to be my way of learning python, but I feel that it could be used for more than that.
-The end goal of this project is to create an all-in-one security scanner that anyone can use.
+Kronos is a personal project of mine that I started to learn more about python. It will continue to be the main place where I test my python programming skills. However, I feel that its uniqueness could be used for more than just by myself, and is why I have chose to release it on GitHub.
+The end goal of this project is to create a flexible scanner that will easily search vulnerability databases.
 
 ## Current state
 
-Uses nmap to scan a target, takes the received information to search the Vulners database, and outputs it to a file in an easy-to-read format. Unfinished.
+Uses nmap to scan a target, takes the received information to search the Vulners database, and outputs it to a file. Unfinished.
 
-## Goals
+## Overall Goals
 
-> Incorporate a plethora of tools to make a versatile python scanning script that anyone can add on to.
+> Allow for fluid incorporation of Nmap arguments from the command line (Most likely with something like `--arguments "-A -T4 -p-" `
+> Allow for easy addition of search criteria from the command line
+> Make a 99% polished tool for actual real-world use.
+> Make it usable on all platforms (I do not personally own an apple product of any kind. If you have a desktop apple product, and would like to help with testing, I would really appreciate it. Message me with more details.
+
+## Current Tasks
+
+> Make more efficient than it currently is (takes a couple of minutes to run a scan).
+> Add more options. Make every option less hard-coded.
 
 ## Installation
 
-Currently, only two modules are required to run Kronos: vulners and python-nmap. 
-Use the command below to install them:
+To install the dependencies that the script requires, simply run the command below while inside of the Kronos directory:
 
-```pip install vulners python-nmap```
+`pip install -r dependencies.txt`
 
 That's it.
 
