@@ -11,8 +11,6 @@ import nmap  # Package is actually python-nmap
 VULNERSAPI = vulners.Vulners(
     api_key="ADD KEY HERE")
 
-main()
-
 def main():
     """
     First, the function establishes the argument parser.
@@ -40,8 +38,6 @@ def main():
 def nmap_scan(hoster):
     """
     First, it tries to establish the PortScanner.
-    If the PortScanner is not established (usually do to the wrong module being
-    installed, or nmap itself not being installed)
     After, nmap scans for everything from the host, and parses the info as csv.
     Then, it takes that info, and outputs it to a .txt files, with info such
     as the name of the host, the state of the host, and if it detected an OS.
@@ -55,10 +51,8 @@ def nmap_scan(hoster):
         sys.exit(1)
 
 # Scanning the host supplied through the --host argument
-    nm_scanner.scan(hoster, arguments='-A -p-')
-
+    nm_scanner.scan(hoster, arguments='-sV')
     csv = nm_scanner.csv()  # Putting the results in a csv variable
-    print(nm_scanner.csv()) #  For testing.
 
 # Printing out the basic info gathered in the scan
     for host in nm_scanner.all_hosts():  # References host to minimize errors.
@@ -82,7 +76,7 @@ def csv_parser(csv, output):
     Next, it outputs the data to a file, and then calls 'vulnersSearcher'
     """
     csv = csv.splitlines()  # Splits data
-    output.write('-------SERVICES AND VERSIONS-------\r\n')  # Spacer
+    output.write('-------SERVICES-------\r\n')  # Spacer
     output.write("\r\n")
     port = [i.split(";")[4] for i in csv]  # Prints port number
     name = [i.split(';')[5] for i in csv]  # Prints name of the port
@@ -116,7 +110,7 @@ def vulners_searcher(product, extrainfo, version, output):
     i = 1
 
     while i < len(product):  # Searches Vulners database n times
-        if product[i] != "":  # Gets rid of blank space searches
+        if not product[i]:  # Gets rid of blank space searches
             # Searches for exploits in the vulners database
             search = VULNERSAPI.searchExploit(
                 product[i] + " " + extrainfo[i] + " " + version[i] +
@@ -134,7 +128,7 @@ def vulners_searcher(product, extrainfo, version, output):
                 title = [t for t in search if "title" in t]  # Searches title.
                 href = [h for h in search if "href" in h]  # Searches for href.
 
-                for i in enumerate(title):  # Prints data length of title.
+                for i in range(len(title)):  # Prints data length of title.
                     try:
                         if len(title[i]) < 100:  # Limits data.
                             output.write(
@@ -157,5 +151,6 @@ def vulners_searcher(product, extrainfo, version, output):
 
     output.close()
 
+main()
+
 print("Done.")
-print(" ")
