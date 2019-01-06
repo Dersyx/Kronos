@@ -11,8 +11,6 @@ import nmap  # Package is actually python-nmap
 VULNERSAPI = vulners.Vulners(
     api_key="ADD KEY HERE")
 
-main()
-
 def main():
     """
     First, the function establishes the argument parser.
@@ -156,6 +154,8 @@ def vulners_searcher(product, extrainfo, version, output):
         i = i + 1
 
     output.close()
+
+main()
 
 print("Done.")
 print(" ")
