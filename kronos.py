@@ -17,8 +17,6 @@ def main():
     After, it takes that argument, and assigns it to variable 'hoster'
     If there is nothing in the hoster variable, it exits the program.
     Else, it continues on with initiating function nmap_scan.
-    From there, nmap_scan returns csv and output, which then csv_parser
-    uses to be called
     """
 
     parser = argparse.ArgumentParser(
@@ -104,9 +102,8 @@ def csv_parser(csv, output):
 
 def vulners_search(product, extrainfo, version, output):
     """
-    First, the function gets rid of dead space, and searches through the
+    The function gets rid of dead space, and searches through the
     Vulners database.
-    Then, it splits and outputs that data to the file in a readable format.
     """
 
     i = 1
@@ -120,7 +117,6 @@ def vulners_search(product, extrainfo, version, output):
 
             if not search:  # If a search is blank, it doesn't output to file.
                 return
-
             try:
                 output.write("\r\n")
                 output.write("-------VULNERABILITIES-------\r\n")  # Spacer
@@ -136,7 +132,8 @@ def vulners_search(product, extrainfo, version, output):
 
 def search_output(search, output):
     """
-
+    Takes output from vulners_search.
+    After that, it splits and outputs that data to the file in a readable format.
     """
     title = [t for t in search if "title" in t]  # Searches title.
     href = [h for h in search if "href" in h]  # Searches for href.
