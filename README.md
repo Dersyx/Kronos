@@ -26,20 +26,19 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 ## Installation
 
-To install the dependencies that the script requires, simply run the command below while inside of the Kronos directory:
+Only one dependency is required. Simply run the command below
 
-`pip install -r dependencies.txt`
+`pip install -U vulners`
 
 That's it.
+
+In order to use the script, you must get a Vulners API key. In order to get an API key, regist an account at the [Vulners website](https://vulners.com).
+Once you have registered, go to the menu by click on your name in the top, right-hand corner.
+Click on **API KEYS**. Generate an API key with scope "API".
+From there, copy your API key into the code in place of ADD KEY HERE (Line 12).
 
 ## Usage
 
 To run Kronos, simply type: `python kronos.py --host x`, where x is the host you want to scan, while in the Kronos directory.
-
-**IF**, when you run the script, you get: `AttributeError: 'bytes' object has no attribute 'get'`, that is due to the script missing the vulners api key.
-In order to get an api key, register an account at the [vulners website](https://vulners.com). 
-Once you have registered, go to the menu by clicking on your name in the top right-hand corner. 
-Click on the **API KEYS** tab. Generate an api key with the scope "api".
-From there, copy your api key into the code in place of ADD KEY HERE in the VULNERSAPI variable (Line 12).
 
 **I hope that you enjoy this project as much as I do.**

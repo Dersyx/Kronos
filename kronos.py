@@ -5,18 +5,15 @@ import argparse
 import sys
 import time
 import vulners
-import nmap  # Package is actually python-nmap
+import subprocess
 
 VULNERSAPI = vulners.Vulners(
     api_key="ADD KEY HERE")
 
 def main():
     """
-    First, the function establishes the argument parser.
-    Then, it adds a host argument, which is required.
-    After, it takes that argument, and assigns it to variable 'hoster'
-    If there is nothing in the hoster variable, it exits the program.
-    Else, it continues on with initiating function nmap_scan.
+    Takes in arguments, along with checks that there is an actual host to scan.
+    After that, everything else is initiated.
     """
 
     parser = argparse.ArgumentParser(
@@ -29,10 +26,10 @@ def main():
     if hoster is None:
         print(parser.usage)
         exit(0)
-    else:
-        print(" ")
-        print("Scanning: " + hoster)
-        nmap_scan(hoster)
+
+    print(" ")
+    print("Scanning: " + hoster)
+    nmap_scan(hoster)
 
 
 def nmap_scan(hoster):
@@ -44,14 +41,7 @@ def nmap_scan(hoster):
     Finally, it calls upon the next function in the chain: 'csvParser'
     """
     # Initiating the Port Scanner
-    try:
-        nm_scanner = nmap.PortScanner()
-    except nmap.PortScannerError:
-        print('Nmap not found.', sys.exc_info()[0])
-        sys.exit(1)
 
-# Scanning the host supplied through the --host argument
-    nm_scanner.scan(hoster, arguments='-sV')
     csv = nm_scanner.csv()  # Putting the results in a csv variable
 
 # Printing out the basic info gathered in the scan
