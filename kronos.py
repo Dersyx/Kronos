@@ -2,37 +2,37 @@
 
 # Imports
 import argparse
-import sys
 import time
-import vulners
 import subprocess
+import vulners
 
-VULNERSAPI = vulners.Vulners(
-    api_key="ADD KEY HERE")
 
 def main():
     """
     Takes in arguments, along with checks that there is an actual host to scan.
     After that, everything else is initiated.
     """
+    vulners_api = vulners.Vulners(
+        api_key="ADD KEY HERE")
 
     parser = argparse.ArgumentParser(
         description="Kronos V1, a modern, python based vulnerability scanner by Dersyx. https://github.com/Dersyx/Kronos")
-    parser.add_argument('--host', action="store", dest="host", required=True)
+
+    parser.add_argument('--target', action="store", dest="target", required=True, help="Target that you want to scan.")
 
     given_args = parser.parse_args()
-    hoster = given_args.host
+    target = given_args.target
 
-    if hoster is None:
+    if target is None:
         print(parser.usage)
         exit(0)
 
     print(" ")
-    print("Scanning: " + hoster)
-    nmap_scan(hoster)
+    print("Scanning: " + target)
+    nmap_scan(target)
 
 
-def nmap_scan(hoster):
+def nmap_scan(target):
     """
     First, it tries to establish the PortScanner.
     After, nmap scans for everything from the host, and parses the info as csv.
@@ -101,7 +101,7 @@ def vulners_search(product, extrainfo, version, output):
     while i < len(product):  # Searches Vulners database n times
         if not product[i]:  # Gets rid of blank space searches
             # Searches for exploits in the vulners database
-            search = VULNERSAPI.searchExploit(
+            search = vulners_api.searchExploit(
                 "{} {} {} order:cvss.score".format(
                     product[i], extrainfo[i], version[i]))
 
