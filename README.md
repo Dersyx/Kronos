@@ -24,13 +24,15 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 > More command-line arguments for flexability.
 
+> Better search result parsing to gather more data.
+
 ## Installation
 
 This script uses nmap to get information about the host.
 You **MUST** have nmap installed on your host machine in order for the script to work.
 To install the dependencies that the script uses, simply use while in the Kronos directory:
 
-`pip install -r dependencies.txt`
+`pip install -U -r dependencies.txt`
 
 In order to use the script, you must get a Vulners API key. In order to get an API key, regist an account at the [Vulners website](https://vulners.com).
 Once you have registered, go to the menu by click on your name in the top, right-hand corner.

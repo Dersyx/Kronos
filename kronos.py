@@ -4,6 +4,7 @@ import argparse
 import time
 import subprocess
 import os
+import sys
 import vulners
 from bs4 import BeautifulSoup
 
@@ -17,32 +18,50 @@ def main():
     """
 
     vulners_api = vulners.Vulners(
-        api_key="ADD KEY HERE")  # Vulners API key needed to search the vulners database. Replace ADD KEY HERE with your personal API key.
+        api_key="56IOL4ZVC71E74Z5GC3CCM0MK43NZNZLAZJHWV6XPQTQ37CRKQT06XAXSPV3NTVG")  # Vulners API key needed to search the vulners database. Replace ADD KEY HERE with your personal API key.
 
     parser = argparse.ArgumentParser(
-        description="Kronos V1, a modern, python based vulnerability scanner" +
-        " by Dersyx. https://github.com/Dersyx/Kronos") # Provides a description for the argument parser, which is called with the -h option.
-
-    parser.add_argument('--target', action="store", dest="target",
-                        required=True, help="Target that you want to scan.")  # Adds --target argument needed to use nmap.
+        description="Kronos V1, a modern, python based vulnerability scanner by Dersyx. https://github.com/Dersyx/Kronos") # Provides a description for the argument parser, which is called with the -h option.
+    parser.add_argument('target', action="store", help="Target that you want to scan.")  # Adds --target argument needed to use nmap.
+    parser.add_argument('--keep-xml', action='store_true', dest='keep_xml', help="Allows you to store the resulting xml file from the nmap scan.")
+    parser.add_argument('--keep-vulners', action='store_true', dest='keep_vulners', help="Allows you to save the vulners search data to an external file, for deeper parsing of the data.")
+    parser.add_argument('--arguments', nargs='*')
 
     given_args = parser.parse_args()  # Parses the arguments given.
     target = given_args.target  # Assigns the --target argument to a variable.
+    keep_xml = given_args.keep_xml
+#    keep_vulners = given_args.keep_vulners
+#    arguments = given_args.arguments
 
     if target is None:  # Makes sure that the user supplied a target before continuing.
-        print(parser.usage)  # If it is not, prints the usage of the parser.
-        exit(0)  # Exits the script.
+        print("This argument is REQUIRED! See below on how to use it:\r\n{}".format(parser.usage))  # If it is not, prints the usage of the parser.
+        sys.exit(0)  # Exits the script.
 
     print("\r\nScanning: {}".format(target))  # Prints a console output to let the user know that the script is working.
     time_file = time.strftime("%m-%d-%Y_%H.%M.%S")  # Grabs the current time when the variable is initiated. Used for file names.
+#    for i in range(100):
+#        try:
+#            time.sleep(1)
+#            sys.stdout.write("\r%d second(s)" % i)
+#            sys.stdout.flush()
+#        except KeyboardInterrupt:
+#            sys.stdout.write("\r%d seconds have elapsed" % i)
+#            sys.exit(0)
     products, extrainfo, versions, output = nmap_scan(target, time_file)  # Calls upon nmap_scan, and assigns the returned output to variables for vulners_search.
+
+    if not keep_xml:
+        os.remove('nmap-output.xml')  # Removes the output file created by nmap. File is needed to parse variables silently.
+
+#    if keep_vulners:
     vulners_search(products, extrainfo, versions, output, vulners_api)  # Calls upon vulners_search with variables supplied by nmap_scan and by the main() function.
-    os.remove('nmap-output.xml')  # Removes the output file created by nmap. File is needed to parse variables silently.
+#    else:
+#        vulners_search(products, extrainfo, versions, output, vulners_api)
     output.close()  # Closes the output .txt file.
+
 
 def nmap_scan(target, time_file):
     """
-    Function starts the output .txt file, and scans the host provided through --target.
+    Function starts the output .txt file, and scans the host.
     Uses BeautifulSoup library to parse the .xml file.
     After, assigns the parsed xml to variables, and writes out to the output file.
     Returns variables necessary for vulners_search()
@@ -85,8 +104,7 @@ def nmap_scan(target, time_file):
 
     i = 0  # Sets while loop iteration variable.
     while i != len(ports):  # Loops through each of the lists, and makes sure that it doesn't catch an IndexError.
-        output.write('{:<12} {:<12} {:<12}'.format(ports[i], states[i],
-                                                   port_names[i]))  # Prints the port numbers, their states, and the names of each port.
+        output.write('{:<12} {:<12} {:<12}'.format(ports[i], states[i], port_names[i]))  # Prints the port numbers, their states, and the names of each port.
         if products[i] is not None:  # Catches any instance of None in the products list, which occurs if there is no product found in the .xml document.
             output.write('{:<12}'.format(products[i]))  # Writes product name, if it passes the if statement above.
         if versions[i] is not None:  # Catches any instance of None in the versions list; explained in if products[i].
@@ -98,8 +116,11 @@ def nmap_scan(target, time_file):
 
     return (products, extrainfo, versions, output)  # Returns necessary info back to main() for use in vulners_search().
 
-def vulners_search(products, extrainfo, versions, output, vulners_api):
 
+def vulners_search(products, extrainfo, versions, output, vulners_api):
+    """
+
+    """
     i = 1
 
     while i < len(products):  # Searches Vulners database i times
@@ -110,10 +131,8 @@ def vulners_search(products, extrainfo, versions, output, vulners_api):
         elif versions[i] == "None":  # Checks if current list placement value is equal to "None"
             versions.remove("None")  # If it is equal to "None", it is removed from the list.
 
-        # Searches for exploits in the vulners database with anything products, extrainfo, and versions of products found by nmap_scan
-        search = vulners_api.searchExploit(
-            "{} {} {} order:cvss.score".format(
-                products[i], extrainfo[i], versions[i]))
+        # Searches for exploits in the vulners database with anything products, extrainfo, and versions of products found by nmap_scan.
+        search = vulners_api.searchExploit("{} {} {} order:cvss.score".format(products[i], extrainfo[i], versions[i]))\
 
         if not search:  # If a search is blank, it doesn't output to file.
             return
@@ -131,21 +150,12 @@ def vulners_search(products, extrainfo, versions, output, vulners_api):
             if len(title[i]) < 100:
             # Sometimes, the splitting above splits along big chunks of data that are irrelavent. If that does occur, this makes sure that does not get outputted to the .txt file.
                 try:  # Attempts to write to the .txt file.
-                    output.write(  # Writes the title information to a file, and replaces dead space with nothing.
-                        "Vulnerability: {}\r\n".format(
-                            title[i].replace("'", "")
-                            .replace("title", "").replace(": ", "")))
+                    output.write("Vulnerability: {}\r\n".format(title[i].replace("'", "").replace("title", "").replace(": ", "")))  # Writes the title information to a file, and replaces dead space with nothing.
                     if len(href[i]) < 100:
-                        output.write(
-                            "Link: {}\r\n".format(
-                                href[i].replace("'", "")
-                                .replace("href", "").replace(": ", "")
-                                .replace("\r", "").replace("\n", "")))
-                    # Writes the href information to a file.
+                        output.write("Link: {}\r\n".format(href[i].replace("'", "").replace("href", "").replace(": ", "").replace("\r", "").replace("\n", "")))  # Writes the href information to a file.
                 except IndexError:  # Occasionally, exploit entries do not include a href. Skips past error.
                     pass
                 output.write("~~~~~~~\r\n")
-            i = i + 1
 
 
 main()
