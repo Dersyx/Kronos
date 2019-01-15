@@ -66,7 +66,6 @@ def nmap_scan(target, time_file):
     After, assigns the parsed xml to variables, and writes out to the output file.
     Returns variables necessary for vulners_search()
     """
-    time_file = time.strftime("%m-%d-%Y_%H.%M.%S")  # Grabs the current system time.
     output_null = open(os.devnull, 'w')  # Sets up variable for silent execution of nmap.
     subprocess.run('nmap {} -oX nmap-output.xml -sV'.format(target), stdout=output_null)  # Executes nmap program installed on system, and outputs to nmap_output.xml.
     xml_file = open("nmap-output.xml", "r")
@@ -125,37 +124,36 @@ def vulners_search(products, extrainfo, versions, output, vulners_api):
 
     while i < len(products):  # Searches Vulners database i times
         if products[i] == "None":  # Checks if current list placement value is equal to "None"
-            products.remove("None")  # If it is equal to "None", it is removed from the list.
+            products[i].remove("None")  # If it is equal to "None", it is removed from the list.
         elif extrainfo[i] == "None":  # Checks if current list placement value is equal to "None"
-            extrainfo.remove("None")  # If it is equal to "None", it is removed from the list.
+            extrainfo[i].remove("None")  # If it is equal to "None", it is removed from the list.
         elif versions[i] == "None":  # Checks if current list placement value is equal to "None"
-            versions.remove("None")  # If it is equal to "None", it is removed from the list.
+            versions[i].remove("None")  # If it is equal to "None", it is removed from the list.
 
         # Searches for exploits in the vulners database with anything products, extrainfo, and versions of products found by nmap_scan.
-        search = vulners_api.searchExploit("{} {} {} order:cvss.score".format(products[i], extrainfo[i], versions[i]))\
+        search = vulners_api.searchExploit("{} {} {} order:cvss.score".format(products[i], extrainfo[i], versions[i]))
 
         if not search:  # If a search is blank, it doesn't output to file.
             return
-        try:
-            output.write("\r\n-------VULNERABILITIES-------\r\n\r\n")  # Spacer
-            output.write("---{}---\r\n".format(products[i]))
-            search = str(search).split('"')  # Splits the data into blocks.
-            search = str(search).split("', '")  # Splits the data further.
-        except ValueError:
-            pass
+
+        output.write("\r\n-------VULNERABILITIES-------\r\n\r\n")  # Spacer
+        output.write("---{}---\r\n".format(products[i]))
+        search = str(search).split('"')  # Splits the data into blocks.
+        search = str(search).split("', '")  # Splits the data further.
 
         title = [t for t in search if "title" in t]  # Searches for titles of exploits found in the vulners database search.
         href = [h for h in search if "href" in h]  # Searches for href links from exploit enteries found in the vulners database search.
         for i in range(len(title)):  # Prints data length of title.
-            if len(title[i]) < 100:
-            # Sometimes, the splitting above splits along big chunks of data that are irrelavent. If that does occur, this makes sure that does not get outputted to the .txt file.
-                try:  # Attempts to write to the .txt file.
+            try:
+                if len(title[i]) < 100:
                     output.write("Vulnerability: {}\r\n".format(title[i].replace("'", "").replace("title", "").replace(": ", "")))  # Writes the title information to a file, and replaces dead space with nothing.
-                    if len(href[i]) < 100:
-                        output.write("Link: {}\r\n".format(href[i].replace("'", "").replace("href", "").replace(": ", "").replace("\r", "").replace("\n", "")))  # Writes the href information to a file.
-                except IndexError:  # Occasionally, exploit entries do not include a href. Skips past error.
-                    pass
-                output.write("~~~~~~~\r\n")
+                    href_temp = href[i].replace("'", "").replace("href", "").replace(": ", "").replace("\r", "").replace("\n", "")
+                    if href_temp and len(href_temp) < 200:
+                        output.write("Link: {}\r\n".format(href_temp))  # Writes the href information to a file.
+                    output.write("~~~~~~~\r\n")
+            # Sometimes, the splitting above splits along big chunks of data that are irrelavent. If that does occur, this makes sure that does not get outputted to the .txt file.
+            except IndexError:
+                pass
 
 
 main()
