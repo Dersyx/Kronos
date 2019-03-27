@@ -3,13 +3,13 @@
 Kronos is a personal project of mine that I started to learn more about python. It will continue to be the main place where I test my python programming skills. However, I feel that its uniqueness could be used for more than just by myself, and is why I have chose to release it on GitHub.
 The end goal of this project is to create a flexible scanner that will easily search vulnerability databases.
 
+**CURRENTLY ONLY TESTED IN WINDOWS**
+
 ## Current state
 
 Uses nmap to scan a target, takes the received information to search the Vulners database, and outputs it to a file. Unfinished.
 
 ## Overall Goals
-
-> Fluid incorporation of Nmap arguments from the command line (Example: `--arguments "-A -T4 -p-" `
 
 > Easy addition of vulners search terms.
 
@@ -20,26 +20,25 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 ## Current Tasks
 
-> Improve efficiency (currently takes 3-4 minutes/scan).
-
-> More command-line arguments for flexability.
+> Better search result parsing to gather more data.
 
 ## Installation
 
-To install the dependencies that the script requires, simply run the command below while inside of the Kronos directory:
+This script uses nmap to get information about the host.
+You **MUST** have nmap installed on your host machine in order for the script to work.
+To install the dependencies that the script uses, simply use while in the Kronos directory:
 
-`pip install -r dependencies.txt`
+`pip install -U -r dependencies.txt`
+
+In order to use the script, you must get a Vulners API key. In order to get an API key, regist an account at the [Vulners website](https://vulners.com).
+Once you have registered, go to the menu by click on your name in the top, right-hand corner.
+Click on **API KEYS**. Generate an API key with scope "API".
+From there, copy your API key into the code in place of ADD KEY HERE (Line 12).
 
 That's it.
 
 ## Usage
 
-To run Kronos, simply type: `python kronos.py --host x`, where x is the host you want to scan, while in the Kronos directory.
+To run Kronos, simply type: `python kronos.py x`, where x is the target host you want to scan, while in the Kronos directory.
 
-**IF**, when you run the script, you get: `AttributeError: 'bytes' object has no attribute 'get'`, that is due to the script missing the vulners api key.
-In order to get an api key, register an account at the [vulners website](https://vulners.com). 
-Once you have registered, go to the menu by clicking on your name in the top right-hand corner. 
-Click on the **API KEYS** tab. Generate an api key with the scope "api".
-From there, copy your api key into the code in place of ADD KEY HERE in the VULNERSAPI variable (Line 12).
-
-**I hope that you enjoy this project as much as I do.**
+**I hope that you enjoy this project as much as I do. Thanks for using!**
