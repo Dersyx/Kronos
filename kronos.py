@@ -4,10 +4,11 @@ import argparse
 import time
 import subprocess
 import os
-import sys
 import vulners
 from bs4 import BeautifulSoup
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def main():
     """
@@ -25,28 +26,13 @@ def main():
     parser.add_argument('target', action="store", help="Target that you want to scan.")  # Adds --target argument needed to use nmap.
     parser.add_argument('--keep-xml', action='store_true', dest='keep_xml', help="Allows you to store the resulting xml file from the nmap scan.")
     parser.add_argument('--keep-vulners', action='store_true', dest='keep_vulners', help="Allows you to save the vulners search data to an external file, for deeper parsing of the data.")
-    parser.add_argument('--arguments', nargs='*')
 
     given_args = parser.parse_args()  # Parses the arguments given.
     target = given_args.target  # Assigns the --target argument to a variable.
     keep_xml = given_args.keep_xml
-#    keep_vulners = given_args.keep_vulners
-#    arguments = given_args.arguments
-
-    if target is None:  # Makes sure that the user supplied a target before continuing.
-        print("This argument is REQUIRED! See below on how to use it:\r\n{}".format(parser.usage))  # If it is not, prints the usage of the parser.
-        sys.exit(0)  # Exits the script.
 
     print("\r\nScanning: {}".format(target))  # Prints a console output to let the user know that the script is working.
     time_file = time.strftime("%m-%d-%Y_%H.%M.%S")  # Grabs the current time when the variable is initiated. Used for file names.
-#    for i in range(100):
-#        try:
-#            time.sleep(1)
-#            sys.stdout.write("\r%d second(s)" % i)
-#            sys.stdout.flush()
-#        except KeyboardInterrupt:
-#            sys.stdout.write("\r%d seconds have elapsed" % i)
-#            sys.exit(0)
     products, extrainfo, versions, output = nmap_scan(target, time_file)  # Calls upon nmap_scan, and assigns the returned output to variables for vulners_search.
 
     if not keep_xml:
@@ -58,6 +44,7 @@ def main():
 #        vulners_search(products, extrainfo, versions, output, vulners_api)
     output.close()  # Closes the output .txt file.
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def nmap_scan(target, time_file):
     """
@@ -66,14 +53,14 @@ def nmap_scan(target, time_file):
     After, assigns the parsed xml to variables, and writes out to the output file.
     Returns variables necessary for vulners_search()
     """
-    output_null = open(os.devnull, 'w')  # Sets up variable for silent execution of nmap.
-    subprocess.run('nmap {} -oX nmap-output.xml -sV'.format(target), stdout=output_null)  # Executes nmap program installed on system, and outputs to nmap_output.xml.
-    xml_file = open("nmap-output.xml", "r")
-    soup = BeautifulSoup(xml_file, 'xml')
+    output_null = open(os.devnull, 'w')  # Sets up variable output to dump output to, in order to make nmap silent in the terminal.
+    subprocess.run(['nmap', target, '-oX', 'nmap-output.xml', '-sV'], stdout=output_null)  # Executes nmap program installed on system, and outputs to nmap_output.xml.
+    xml_file = open("nmap-output.xml", "r")  # Opens the output file of nmap, to be used for parsing.
+    soup = BeautifulSoup(xml_file, 'xml')  # Creates a variable to interface with the output file variable xml_file.
 
-    # Printing out the basic info gathered in the scan.
     # Opens a file with the time and host of the scan.
     output = open("{}_{}.txt".format(target, time_file), "w+", encoding="UTF-8")  # Opens output file with current system time and UTF-8 encoding.
+
     output.write('-------BASIC INFO-------\r\n\r\n')  # Spaces
     for address in soup.find_all('address'):  # Finds all the addresses found in the scan.
         output.write('Host: {} ({})\r\n'.format(target, address.get('addr')))  # Outputs the IP address to the file.
@@ -82,7 +69,7 @@ def nmap_scan(target, time_file):
 
     output.write('\r\n-------SERVICES-------\r\n\r\n')  # Spacer
 
-    # Sets empty lists for the variables in the .xml files to be assigned to.
+    # Sets empty lists for the variables in the .xml file to be assigned to.
     ports = []  # Ports list.
     port_names = []  # Name of the ports list.
     states = []  # The states of the ports list.
@@ -94,7 +81,7 @@ def nmap_scan(target, time_file):
     for i in soup.find_all('port'):  # Finds all instances of 'port' in the .xml.
         ports.append(i.get('portid'))  # Appends each port number found.
     for i in soup.find_all('state'):  # Finds all instances of 'state' in the .xml.
-        states.append(i.get('state'))  # Appends teach port state found.
+        states.append(i.get('state'))  # Appends each port state found.
     for i in soup.find_all('service'):  # Finds all instances of 'service' in the .xml.
         port_names.append(i.get('name'))  # Appends each port name found.
         products.append(i.get('product'))  # Appends each product found, if any.
@@ -115,10 +102,11 @@ def nmap_scan(target, time_file):
 
     return (products, extrainfo, versions, output)  # Returns necessary info back to main() for use in vulners_search().
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def vulners_search(products, extrainfo, versions, output, vulners_api):
     """
-
+    This function takes in the data from nmap_scan, searches the vulners database for any info relating to it, and outputs it to a file.
     """
     i = 1
 
@@ -133,7 +121,7 @@ def vulners_search(products, extrainfo, versions, output, vulners_api):
         # Searches for exploits in the vulners database with anything products, extrainfo, and versions of products found by nmap_scan.
         search = vulners_api.searchExploit("{} {} {} order:cvss.score".format(products[i], extrainfo[i], versions[i]))
 
-        if not search:  # If a search is blank, it doesn't output to file.
+        if not search:  # If a search is blank, it doesn't output to the file.
             return
 
         output.write("\r\n-------VULNERABILITIES-------\r\n\r\n")  # Spacer
@@ -155,6 +143,10 @@ def vulners_search(products, extrainfo, versions, output, vulners_api):
             except IndexError:
                 pass
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 main()
 

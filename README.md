@@ -11,8 +11,6 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 ## Overall Goals
 
-> Fluid incorporation of Nmap arguments from the command line (Example: `--arguments "-A -T4 -p-" `).
-
 > Easy addition of vulners search terms.
 
 > 99% polished tool for professional use.
@@ -21,8 +19,6 @@ Uses nmap to scan a target, takes the received information to search the Vulners
 
 
 ## Current Tasks
-
-> More command-line arguments for flexability.
 
 > Better search result parsing to gather more data.
 
@@ -43,6 +39,6 @@ That's it.
 
 ## Usage
 
-To run Kronos, simply type: `python kronos.py --target x`, where x is the target host you want to scan, while in the Kronos directory.
+To run Kronos, simply type: `python kronos.py x`, where x is the target host you want to scan, while in the Kronos directory.
 
 **I hope that you enjoy this project as much as I do. Thanks for using!**
